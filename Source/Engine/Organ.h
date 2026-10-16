@@ -110,6 +110,24 @@ public:
 
 private:
     void computeIncs();
+    // Drawbar levels (~3 dB per step like a tonewheel organ); called every
+    // chunk so registration changes and macros affect held notes.
+    float updateDrawbars()
+    {
+        const auto& P = eng->params->organ;
+        float total = 0.0f;
+        for (int d = 0; d < 9; ++d)
+        {
+            float db = P.db[d];
+            if (model == 0 && P.percOn > 0.5f && d == 8) db = 0.0f;   // 1' bus used by percussion
+            amp[d] = db > 0.05f ? dbToGain ((db - 8.0f) * 3.0f) : 0.0f;
+            total += amp[d];
+        }
+        const float levelNorm = 0.16f / std::max (1.0f, std::sqrt (total * 1.6f)) / std::sqrt ((float) nVoices);
+        for (int d = 0; d < 9; ++d) amp[d] *= levelNorm * velGain;
+        return levelNorm;
+    }
+    float velGain = 1.0f;
     EngineBase* eng = nullptr;
     float phase[9][3] {}, inc[9][3] {}, amp[9] {};
     const float* tab[9] {};
@@ -253,27 +271,14 @@ inline void OrganVoice::start (int keyIn, float velocity)
 
     const bool pipe = model >= 3 && model <= 5;
     const bool reed = model >= 6;
-    // drawbar levels: ~3 dB per step like a tonewheel organ
-    float total = 0.0f;
+    // tonewheels start at random phases (key click character)
     for (int d = 0; d < 9; ++d)
-    {
-        float db = P.db[d];
-        if (model == 0 && P.percOn > 0.5f && d == 8) db = 0.0f;   // 1' bus used by percussion
-        amp[d] = db > 0.05f ? dbToGain ((db - 8.0f) * 3.0f) : 0.0f;
-        total += amp[d];
-    }
-    const float levelNorm = 0.16f / std::max (1.0f, std::sqrt (total * 1.6f)) / std::sqrt ((float) nVoices);
-    for (int d = 0; d < 9; ++d)
-    {
-        amp[d] *= levelNorm;
-        // tonewheels start at random phases (key click character)
         for (int k = 0; k < 3; ++k) phase[d][k] = rng.uni();
-    }
     // reed/pipe organs respond to velocity a little, tonewheels don't
-    float velGain = (pipe || model == 0 || model == 1 || model == 2) ? 1.0f : (0.55f + 0.45f * vel);
+    velGain = (pipe || model == 0 || model == 1 || model == 2) ? 1.0f : (0.55f + 0.45f * vel);
     if (model == 5) velGain *= 1.5f;          // pipe reeds
     if (model >= 6) velGain *= 1.7f;          // reed organ / accordion
-    for (int d = 0; d < 9; ++d) amp[d] *= velGain;
+    const float levelNorm = updateDrawbars();
 
     env = 0.0f;
     envTarget = 1.0f;
@@ -306,6 +311,7 @@ inline void OrganVoice::render (float* L, float* R, int n)
     const auto& bank = WaveBank::get();
     const float hz = eng->ctx->hz (curNote);
     if (std::fabs (hz - lastHz) > 1.0e-3f * lastHz) { lastHz = hz; computeIncs(); }
+    updateDrawbars();
 
     for (int i = 0; i < n; ++i)
     {

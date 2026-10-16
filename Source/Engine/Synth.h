@@ -179,7 +179,7 @@ public:
         if (structural) reset();
     }
 
-    void setMacros (const Macros& m) { macros = m; }
+    void setMacros (const Macros& m) { macros = m; updateEff(); }
 
     bool enabled() const { return base.engine() != Engine::None; }
     const LayerParams& params() const { return base; }

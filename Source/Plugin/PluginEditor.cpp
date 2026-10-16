@@ -715,11 +715,12 @@ void KeyverseEditor::rebuildEditPanel()
     const int width = juce::jmax (200, editViewport.getWidth() - editViewport.getScrollBarThickness() - 2);
     int y = 0;
 
-    auto rebuildLater = [this]
+    const juce::Component::SafePointer<KeyverseEditor> safeThis (this);
+    auto rebuildLater = [safeThis]
     {
-        juce::MessageManager::callAsync ([sp = juce::Component::SafePointer<KeyverseEditor> (this)]
+        juce::MessageManager::callAsync ([safeThis]
         {
-            if (sp != nullptr) { sp->rebuildEditPanel(); sp->refreshHeader(); }
+            if (safeThis != nullptr) { safeThis->rebuildEditPanel(); safeThis->refreshHeader(); }
         });
     };
     auto changed = [this, rebuildLater] (bool structural)

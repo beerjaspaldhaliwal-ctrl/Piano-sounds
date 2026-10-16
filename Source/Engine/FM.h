@@ -65,7 +65,8 @@ public:
             env[i].noteOn (! wasActive);
             const float velScale = 1.0f - o.velSens * (1.0f - vel);
             const float keyScale = std::exp2 (-o.keyScale * kt * 1.5f);
-            lvl[i] = fmLevel (o.level) * velScale * keyScale;
+            opScale[i] = velScale * keyScale;
+            lvl[i] = fmLevel (o.level) * opScale[i];
             if (alg.carriers & (1u << i)) ++nc;
             if (! wasActive) { phase[i] = 0.0f; out[i] = 0.0f; }
         }
@@ -94,6 +95,7 @@ public:
         lfoFade = std::min (1.0f, lfoFade + (float) n / (std::max (P.lfoDelay, 0.01f) * sr));
         const float lfo = sin01 (lfoPhase) * lfoFade;
         const float hz = C.hz (curNote + lfo * P.lfoPitch);
+        for (int i = 0; i < 6; ++i) lvl[i] = fmLevel (P.op[i].level) * opScale[i];   // follows macros live
         float inc[6];
         for (int i = 0; i < 6; ++i)
         {
@@ -140,7 +142,7 @@ private:
     EngineBase* eng = nullptr;
     FMAlg alg {};
     Adsr env[6];
-    float phase[6] {}, out[6] {}, lvl[6] {};
+    float phase[6] {}, out[6] {}, lvl[6] {}, opScale[6] {};
     float fb1 = 0.0f, fb2 = 0.0f, carrierNorm = 0.3f, lfoPhase = 0.0f, lfoFade = 0.0f;
     int key = 60;
     Rng rng;
