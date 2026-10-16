@@ -273,4 +273,24 @@ void addFx (Lib& L)
         L.add (F, "Sci-Fi", "Laser Zap", "laser zap pew sci-fi", s);
     }
 }
+
+// Clean starting points for sound design on the Edit page.
+void addInit (Lib& L)
+{
+    const char* I = kInit;
+    L.add (I, "Init", "Init Acoustic Piano", "init template blank", make (Engine::Piano));
+    L.add (I, "Init", "Init Electric Piano", "init template blank", make (Engine::EPiano));
+    L.add (I, "Init", "Init Plucked String", "init template blank", make (Engine::Pluck));
+    L.add (I, "Init", "Init Mallet & Bell", "init template blank", make (Engine::Mallet));
+    L.add (I, "Init", "Init Organ", "init template blank", make (Engine::Organ));
+    {
+        auto s = make (Engine::Analog); s.layer[0].common.poly = 16;
+        L.add (I, "Init", "Init Analog Synth", "init template blank", s);
+    }
+    {
+        auto s = make (Engine::FM); auto& f = s.layer[0].fm; s.layer[0].common.poly = 16;
+        f.alg = 2; op (f, 0, 1.0f, 1.0f, 0.002f, 1.0f, 0.8f, 0.3f); op (f, 1, 1.0f, 0.6f, 0.002f, 1.0f, 0.5f, 0.3f);
+        L.add (I, "Init", "Init FM Synth", "init template blank", s);
+    }
+}
 } // namespace kv::banks

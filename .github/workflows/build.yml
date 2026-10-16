@@ -49,6 +49,26 @@ jobs:
       - name: Test every factory preset
         run: ctest --test-dir build -C Release --output-on-failure
 
+      - name: Validate with pluginval
+        shell: bash
+        run: |
+          VST3=build/Keyverse_artefacts/Release/VST3/Keyverse.vst3
+          case "${{ runner.os }}" in
+            Linux)
+              sudo apt-get install -y xvfb
+              curl -sSL -o pv.zip https://github.com/Tracktion/pluginval/releases/latest/download/pluginval_Linux.zip
+              unzip -q pv.zip
+              xvfb-run -a ./pluginval --strictness-level 8 --validate-in-process "$VST3" ;;
+            macOS)
+              curl -sSL -o pv.zip https://github.com/Tracktion/pluginval/releases/latest/download/pluginval_macOS.zip
+              unzip -q pv.zip
+              ./pluginval.app/Contents/MacOS/pluginval --strictness-level 8 --validate-in-process "$VST3" ;;
+            Windows)
+              curl -sSL -o pv.zip https://github.com/Tracktion/pluginval/releases/latest/download/pluginval_Windows.zip
+              unzip -q pv.zip
+              ./pluginval.exe --strictness-level 8 --validate-in-process "$VST3" ;;
+          esac
+
       - name: Collect plug-ins
         shell: bash
         run: |

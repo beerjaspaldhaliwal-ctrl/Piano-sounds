@@ -9,7 +9,7 @@ const std::vector<std::string>& categories()
     static const std::vector<std::string> c {
         pb::kAcoustic, pb::kElectric, pb::kSynthKeys, pb::kOrgans, pb::kClavs, pb::kMallets,
         pb::kGuitars, pb::kBasses, pb::kPads, pb::kLeads, pb::kSynthBass, pb::kStrBrass,
-        pb::kPlucks, pb::kWorld, pb::kLayers, pb::kFx
+        pb::kPlucks, pb::kWorld, pb::kLayers, pb::kFx, pb::kInit
     };
     return c;
 }
@@ -35,6 +35,7 @@ const std::vector<Preset>& factoryPresets()
         banks::addWorld (lib);
         banks::addLayers (lib);
         banks::addFx (lib);
+        banks::addInit (lib);
         // stable order: by category (browser order), keep insertion order inside a category
         std::vector<Preset> sorted;
         sorted.reserve (lib.v.size());

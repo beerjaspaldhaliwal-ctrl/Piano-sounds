@@ -21,4 +21,5 @@ void addPlucks (pb::Lib&);
 void addWorld (pb::Lib&);
 void addLayers (pb::Lib&);
 void addFx (pb::Lib&);
+void addInit (pb::Lib&);
 } // namespace kv::banks

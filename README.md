@@ -4,7 +4,7 @@
 browser with **509 ready-to-play sounds** covering acoustic and electric pianos, synth keys,
 organs, clavs and harpsichords, mallets and bells, guitars, basses, synth pads, leads and
 basses, strings and brass, plucks and arpeggios, world instruments, layered/split
-combinations and atmospheres.
+combinations and atmospheres, plus init templates for building your own sounds.
 
 It builds as **VST3, AU (macOS), LV2 (Linux) and a Standalone app** for Windows, macOS and Linux.
 

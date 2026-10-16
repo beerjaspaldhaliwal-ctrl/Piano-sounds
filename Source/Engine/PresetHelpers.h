@@ -32,6 +32,7 @@ inline const char* const kPlucks = "Plucks & Arps";
 inline const char* const kWorld = "World";
 inline const char* const kLayers = "Layers & Splits";
 inline const char* const kFx = "FX & Atmospheres";
+inline const char* const kInit = "Init Templates";
 
 inline SoundData make (Engine e)
 {

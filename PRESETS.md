@@ -1,6 +1,6 @@
 # Keyverse factory presets
 
-509 presets in 16 categories. Every preset can be reshaped with the macro knobs and fully edited on the **Edit** page.
+509 sounds in 16 categories, plus 7 init templates for designing your own. Every preset can be reshaped with the macro knobs and fully edited on the **Edit** page.
 
 | Category | Presets |
 |---|---|
@@ -20,6 +20,7 @@
 | [World](#world) | 25 |
 | [Layers & Splits](#layers--splits) | 27 |
 | [FX & Atmospheres](#fx--atmospheres) | 18 |
+| [Init Templates](#init-templates) | 7 |
 
 ## Acoustic Pianos
 
@@ -292,3 +293,7 @@
 **Lo-Fi:** Tape Warble Keys · Radio Static Keys
 
 **Nature:** Thunder Rumble
+
+## Init Templates
+
+**Init:** Init Acoustic Piano · Init Electric Piano · Init Plucked String · Init Mallet & Bell · Init Organ · Init Analog Synth · Init FM Synth
