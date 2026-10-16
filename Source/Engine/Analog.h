@@ -33,8 +33,8 @@ struct FormantBank
     float process (float x)
     {
         float y = 0.0f;
-        for (int k = 0; k < 3; ++k) y += bp[k].bandpass (x) * gains[k];
-        return y * 0.75f;
+        for (int k = 0; k < 3; ++k) y += bp[k].bandpass (x) * bp[k].k * gains[k];   // peak gain 1 per formant
+        return y * 3.0f;
     }
     void reset() { for (auto& b : bp) b.reset(); }
 };
@@ -290,12 +290,12 @@ inline void AnalogVoice::render (float* L, float* R, int n)
                 svfL.set (fc, res, sr);
                 float lp, bp, hp;
                 svfL.process (fastTanh (sl * drive * 0.7f) / (drive * 0.7f), lp, bp, hp);
-                yl = ft == 1 ? lp : ft == 2 ? bp : ft == 3 ? hp : (lp + hp);
+                yl = ft == 1 ? lp : ft == 2 ? bp * std::sqrt (svfL.k) : ft == 3 ? hp : (lp + hp);
                 if (stereo)
                 {
                     svfR.set (fc, res, sr);
                     svfR.process (fastTanh (sr_ * drive * 0.7f) / (drive * 0.7f), lp, bp, hp);
-                    yr = ft == 1 ? lp : ft == 2 ? bp : ft == 3 ? hp : (lp + hp);
+                    yr = ft == 1 ? lp : ft == 2 ? bp * std::sqrt (svfR.k) : ft == 3 ? hp : (lp + hp);
                 }
                 else yr = yl;
                 break;

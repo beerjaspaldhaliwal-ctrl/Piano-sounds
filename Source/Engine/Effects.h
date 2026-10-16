@@ -58,7 +58,8 @@ public:
                 float pk = 0.0f;
                 for (int k = 0; k < m; ++k) pk = std::max (pk, std::fabs (L[i + k]) + std::fabs (R[i + k]));
                 env = pk > env ? pk + (env - pk) * std::pow (att, (float) m) : pk + (env - pk) * std::pow (rel, (float) m);
-                target = clampf (env * 4.0f * (0.3f + p.wahDepth), 0.0f, 1.0f);
+                // square-root response: sweeps across the whole playing range instead of pinning open
+                target = clampf (std::sqrt (env) * 0.85f * (0.3f + p.wahDepth), 0.0f, 1.0f);
             }
             else if (mode == 2)
             {
@@ -72,8 +73,9 @@ public:
             for (int k = 0; k < m; ++k)
             {
                 float lp, bp, hp;
-                fl.process (L[i + k], lp, bp, hp); L[i + k] = bp * 1.6f + lp * 0.25f;
-                fr.process (R[i + k], lp, bp, hp); R[i + k] = bp * 1.6f + lp * 0.25f;
+                // normalised band-pass (peak gain 1) plus a little low end, like a wah pedal
+                fl.process (L[i + k], lp, bp, hp); L[i + k] = bp * fl.k * 2.6f + lp * 0.25f;
+                fr.process (R[i + k], lp, bp, hp); R[i + k] = bp * fr.k * 2.6f + lp * 0.25f;
             }
         }
     }
