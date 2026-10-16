@@ -27,13 +27,12 @@ struct StringLoop
     int nDisp = 0;
     float p = 0.2f, lp = 0.0f, g = 0.99f;       // loss filter
     float buzz = 0.0f, buzzThr = 1.0f;
-    float dcR = 0.999f, dcX = 0.0f, dcY = 0.0f;  // in-loop DC blocker
     float level = 1.0f;
 
     void init (int maxLen) { dl.init (maxLen); reset(); }
     void reset()
     {
-        dl.clear(); apX = apY = lp = dcX = dcY = 0.0f;
+        dl.clear(); apX = apY = lp = 0.0f;
         for (int i = 0; i < 3; ++i) dX[i] = dY[i] = 0.0f;
     }
 
@@ -42,11 +41,29 @@ struct StringLoop
     {
         f = clampf (f, 10.0f, sr * 0.3f);
         const float w = kTwoPi * f / sr;
-        p = clampf (damp, 0.0f, 0.95f);
+        const std::complex<float> z1 = std::polar (1.0f, -w);
         nDisp = stiff > 0.01f ? 3 : 0;
         dC = -0.65f * clampf (stiff, 0.0f, 1.0f) * clampf (1.0f - f / 3000.0f, 0.1f, 1.0f);
 
-        const std::complex<float> z1 = std::polar (1.0f, -w);
+        // Loss filter. The loop's DC gain equals g; keep it safely below 1 by
+        // easing the damping filter when a long decay is asked of a high note.
+        const float rho = std::pow (10.0f, -3.0f / (std::max (t60, 0.01f) * f));
+        auto lpMagAt = [&] (float pp) { return (1.0f - pp) / std::abs (1.0f - pp * z1); };
+        constexpr float gMax = 0.9995f;
+        p = clampf (damp, 0.0f, 0.95f);
+        if (rho / lpMagAt (p) > gMax)
+        {
+            float lo = 0.0f, hi = p;
+            for (int it = 0; it < 12; ++it)
+            {
+                const float mid = 0.5f * (lo + hi);
+                if (rho / lpMagAt (mid) > gMax) hi = mid; else lo = mid;
+            }
+            p = lo;
+        }
+        g = std::min (gMax, rho / std::max (lpMagAt (p), 1.0e-4f));
+
+        // Exact tuning: subtract the phase delay of every filter in the loop.
         const float lpDelay = std::atan2 (p * std::sin (w), 1.0f - p * std::cos (w)) / w;
         float dispDelay = 0.0f;
         if (nDisp > 0)
@@ -54,20 +71,11 @@ struct StringLoop
             const std::complex<float> A = (dC + z1) / (1.0f + dC * z1);
             dispDelay = (float) nDisp * (-std::arg (A) / w);
         }
-        // DC blocker corner well below the fundamental; its phase lead is compensated
-        dcR = 1.0f - kTwoPi * (f * 0.125f) / sr;
-        const std::complex<float> Hdc = (1.0f - z1) / (1.0f - dcR * z1);
-        const float dcDelay = -std::arg (Hdc) / w;   // negative (phase lead)
-        float total = sr / f - lpDelay - dispDelay - dcDelay;
-        int n = (int) std::floor (total - 0.5f);
-        n = std::clamp (n, 1, dl.capacity() - 2);
+        const float total = sr / f - lpDelay - dispDelay;
+        const int n = std::clamp ((int) std::floor (total - 0.5f), 1, dl.capacity() - 2);
         const float d = clampf (total - (float) n, 0.1f, 1.9f);
         N = n;
         apC = (1.0f - d) / (1.0f + d);
-
-        const float lpMag = (1.0f - p) / std::abs (1.0f - p * z1) * std::abs (Hdc);
-        const float rho = std::pow (10.0f, -3.0f / (std::max (t60, 0.01f) * f));
-        g = std::min (0.99995f, rho / std::max (lpMag, 1.0e-4f));
     }
 
     float tick (float in)
@@ -83,8 +91,6 @@ struct StringLoop
         }
         lp = (1.0f - p) * x + p * lp;
         float out = g * lp;
-        const float d = out - dcX + dcR * dcY;
-        dcX = out; dcY = d; out = d;
         if (buzz > 0.0f && out < -buzzThr)   // one-sided bridge contact
             out = -buzzThr + (out + buzzThr) * (1.0f - buzz);
         const float wv = out + in;

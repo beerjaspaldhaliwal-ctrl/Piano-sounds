@@ -173,7 +173,19 @@ int main (int argc, char** argv)
             sum += 0.5 * (L[(size_t) i] * L[(size_t) i] + R[(size_t) i] * R[(size_t) i]);
         }
         const float rmsDb = 10.0f * std::log10 ((float) (sum / (perfLen * sr)) + 1e-12f);
-        const int voicesLeft = s.activeVoices();
+        // long natural decays (bells, drones) are fine; stuck voices are not
+        int voicesLeft = s.activeVoices();
+        double silenceAt = perfLen + tailLen;
+        if (voicesLeft > 0)
+        {
+            std::vector<float> tl ((size_t) sr), tr ((size_t) sr);
+            for (int sec = 0; sec < 40 && s.activeVoices() > 0; ++sec)
+            {
+                s.render (tl.data(), tr.data(), sr);
+                silenceAt += 1.0;
+            }
+            voicesLeft = s.activeVoices();
+        }
 
         // tuning check on a sustained A3 (dry)
         float cents = 0.0f; bool pitched = false;
@@ -199,9 +211,9 @@ int main (int argc, char** argv)
         const bool fail = bad > 0 || peak < 1.0e-3f || voicesLeft > 0;
         failures += fail ? 1 : 0;
         if (! quiet || fail)
-            std::printf ("%3d %-44s peak %6.1f dB  rms %6.1f dB  cpu x%5.1f  voices %d  tune %s%6.1f ct%s\n",
-                         idx, full.substr (0, 44).c_str(), gainToDb (peak), rmsDb, (perfLen + tailLen) / cpu, voicesLeft,
-                         pitched ? "" : "?", cents, fail ? "  <-- FAIL" : "");
+            std::printf ("%3d %-44s peak %6.1f dB  rms %6.1f dB  cpu x%5.1f  silent@%4.0fs  tune %s%6.1f ct%s\n",
+                         idx, full.substr (0, 44).c_str(), gainToDb (peak), rmsDb, (perfLen + tailLen) / cpu, silenceAt,
+                         pitched ? "" : "?", cents, fail ? (voicesLeft > 0 ? "  <-- FAIL (stuck voices)" : "  <-- FAIL") : "");
 
         if (! wavDir.empty())
         {

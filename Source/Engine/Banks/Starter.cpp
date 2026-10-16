@@ -6,29 +6,6 @@ namespace kv::banks
 using namespace pb;
 using namespace inst;
 
-void addOrgans (Lib& L) { L.add (kOrgans, "Tonewheel", "Jazz Organ", "b3", tonewheel ("888000000")); }
-void addClavs (Lib& L)
-{
-    L.add (kClavs, "Clavinet", "Clavinet", "", clavinet());
-    L.add (kClavs, "Harpsichord", "Harpsichord", "", harpsichord());
-}
-void addMallets (Lib& L)
-{
-    L.add (kMallets, "Vibraphone", "Vibraphone", "", vibraphone());
-    L.add (kMallets, "Marimba", "Marimba", "", marimba());
-    L.add (kMallets, "Celeste", "Celeste", "", celeste());
-    L.add (kMallets, "Music Box", "Music Box", "", musicBox());
-}
-void addGuitars (Lib& L)
-{
-    L.add (kGuitars, "Nylon", "Nylon Guitar", "", nylonGuitar());
-    L.add (kGuitars, "Steel", "Steel Guitar", "", steelGuitar());
-    L.add (kGuitars, "Electric", "Clean Electric", "", electricGuitar());
-    auto d = electricGuitar (0.07f);
-    amp (d.layer[0], LeadAmp, 0.7f, 0.1f, Closed4x12);
-    L.add (kGuitars, "Electric", "Lead Electric", "", d);
-}
-void addBasses (Lib& L) { auto b = bassGuitar(); b.layer[0].common.transpose = -12; L.add (kBasses, "Electric", "Finger Bass", "", b); }
 void addPads (Lib& L)
 {
     auto s = analog();

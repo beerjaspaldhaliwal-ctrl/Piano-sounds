@@ -270,7 +270,9 @@ inline void OrganVoice::start (int keyIn, float velocity)
         for (int k = 0; k < 3; ++k) phase[d][k] = rng.uni();
     }
     // reed/pipe organs respond to velocity a little, tonewheels don't
-    const float velGain = (pipe || model == 0 || model == 1 || model == 2) ? 1.0f : (0.55f + 0.45f * vel);
+    float velGain = (pipe || model == 0 || model == 1 || model == 2) ? 1.0f : (0.55f + 0.45f * vel);
+    if (model == 5) velGain *= 1.5f;          // pipe reeds
+    if (model >= 6) velGain *= 1.7f;          // reed organ / accordion
     for (int d = 0; d < 9; ++d) amp[d] *= velGain;
 
     env = 0.0f;
