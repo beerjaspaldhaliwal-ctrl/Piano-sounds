@@ -205,6 +205,10 @@ ParamRow::ParamRow (const kv::PD& d, float* target, std::function<void (bool)> c
     {
         slider = std::make_unique<juce::Slider> (juce::Slider::LinearHorizontal, juce::Slider::TextBoxRight);
         slider->setTextBoxStyle (juce::Slider::TextBoxRight, false, 74, 20);
+        slider->setColour (juce::Slider::textBoxBackgroundColourId, Colours::bg);
+        slider->setColour (juce::Slider::textBoxTextColourId, Colours::text);
+        slider->setColour (juce::Slider::textBoxOutlineColourId, Colours::outline);
+        slider->setColour (juce::Slider::textBoxHighlightColourId, Colours::accent.withAlpha (0.4f));
         juce::NormalisableRange<double> range (desc.lo, desc.hi);
         if (desc.kind == kv::PK::Int) range.interval = 1.0;
         if (desc.kind == kv::PK::Log)

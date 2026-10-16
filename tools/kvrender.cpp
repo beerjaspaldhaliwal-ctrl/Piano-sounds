@@ -38,8 +38,8 @@ static void writeWav (const std::string& path, const std::vector<float>& L, cons
     f.write ("data", 4); u32 (dataBytes);
     for (uint32_t i = 0; i < n; ++i)
     {
-        const int16_t l = (int16_t) std::lround (clampf (L[i], -1.0f, 1.0f) * 32767.0f);
-        const int16_t r = (int16_t) std::lround (clampf (R[i], -1.0f, 1.0f) * 32767.0f);
+        const int16_t l = (int16_t) std::lround (clampf (L[i], -1.0f, 1.0f) * 32767.0);
+        const int16_t r = (int16_t) std::lround (clampf (R[i], -1.0f, 1.0f) * 32767.0);
         f.write ((const char*) &l, 2); f.write ((const char*) &r, 2);
     }
 }
@@ -102,7 +102,7 @@ int main (int argc, char** argv)
             s.prepare (sr, 512);
             s.setSound (pr.data, true);
             const float secs = (float) std::atof (argv[i + 4]);
-            const int n = (int) (secs * sr), hold = (int) (secs * 0.6f * sr);
+            const int n = (int) (secs * (float) sr), hold = (int) (secs * 0.6f * (float) sr);
             std::vector<float> L ((size_t) n), R ((size_t) n);
             s.noteOn (std::atoi (argv[i + 2]), std::atoi (argv[i + 3]));
             s.render (L.data(), R.data(), hold);

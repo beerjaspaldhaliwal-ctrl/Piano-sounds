@@ -95,7 +95,7 @@ void addElectricPianos (Lib& L)
         auto s = tineEP(); auto& l = s.layer[0]; auto& e = l.ep;
         e.hardness = 0.55f; e.offset = 0.55f; e.bark = 0.5f; e.decay = 1.2f; e.toneBar = 0.55f;
         eq (l, 1.0f, 0.0f, 1000.0f, 2.0f);
-        L.add (E, "Tine", "Vintage Vibe Tine", "vintage vibe modern tine", s);
+        L.add (E, "Tine", "Modern Vibe Tine", "vintage vibe modern tine", s);
     }
     {
         auto s = tineEP(); auto& e = s.layer[0].ep; e.offset = 0.7f; e.hardness = 0.35f; e.bell = 0.25f; e.drive = 0.35f;

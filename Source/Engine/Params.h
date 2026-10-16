@@ -118,7 +118,7 @@ struct PianoParams
     float hfDamp = 0.5f, inharm = 1.0f, stretch = 1.0f, aftersound = 0.35f;
     float hammerNoise = 0.35f, releaseNoise = 0.3f, mechNoise = 0.1f;
     float body = 0.35f, bodySize = 0.7f, bodyTone = 0.0f, pedalRes = 0.35f, width = 0.6f;
-    float velSens = 0.6f, tack = 0.0f, piezo = 0.0f, prep = 0.0f, felt = 0.0f, maxPartials = 64;
+    float velSens = 0.6f, tack = 0.0f, piezo = 0.0f, prep = 0.0f, felt = 0.0f, maxPartials = 96;
 
     template <class V> void visit (V&& v)
     {

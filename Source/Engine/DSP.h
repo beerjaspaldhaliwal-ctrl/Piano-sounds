@@ -10,11 +10,11 @@
 #include <cstring>
 #include <vector>
 
-#if defined(_MSC_VER)
- #define KV_SIMD_REDUCE(...)
-#else
+#if defined(KV_OMP_SIMD) && ! defined(_MSC_VER)
  #define KV_PRAGMA(x) _Pragma(#x)
  #define KV_SIMD_REDUCE(...) KV_PRAGMA(omp simd reduction(+:__VA_ARGS__))
+#else
+ #define KV_SIMD_REDUCE(...)
 #endif
 
 namespace kv

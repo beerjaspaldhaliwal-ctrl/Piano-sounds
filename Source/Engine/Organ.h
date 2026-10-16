@@ -115,7 +115,7 @@ private:
     const float* tab[9] {};
     int nVoices = 1, model = 0, key = 60;
     float env = 0.0f, envTarget = 1.0f, attInc = 1.0f, relMul = 0.99f;
-    float percEnv = 0.0f, percMul = 0.0f, percPhase = 0.0f, percInc = 0.0f, percAmp = 0.0f;
+    float percEnv = 0.0f, percMul = 0.0f, percPhase = 0.0f, percInc = 0.0f;
     const float* percTab = nullptr;
     float leakPhase[2] {}, leakInc[2] {}, leakAmp = 0.0f;
     float clickEnv = 0.0f, clickMul = 0.0f, chiffEnv = 0.0f, chiffMul = 0.0f, windAmt = 0.0f;
