@@ -24,7 +24,7 @@ void addGuitars (Lib& L)
     }
     {
         auto s = nylonGuitar(); auto& p = s.layer[0].pluck; p.excite = 0; p.bright = 0.7f; p.pluckPos = 0.11f; p.pickNoise = 0.35f;
-        s.layer[0].common.strum = 14;
+        s.layer[0].common.strum = 14; s.layer[0].common.level = 4.0f;
         L.add (G, "Nylon", "Flamenco", "flamenco spanish rasgueado bright", s);
     }
     {

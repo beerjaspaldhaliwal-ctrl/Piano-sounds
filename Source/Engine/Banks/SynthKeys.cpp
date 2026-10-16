@@ -80,7 +80,7 @@ void addSynthKeys (Lib& L)
         L.add (K, "Stab", "Supersaw Keys", "supersaw trance jp8000 edm", s);
     }
     {
-        auto s = polyKeys (5, -1, 0, 900, 0.3f, 4.0f, 0.25f, 0.0f, 0.35f);
+        auto s = polyKeys (5, -1, 0, 900, 0.3f, 4.0f, 0.25f, 0.0f, 0.35f); s.layer[0].common.level = 5.0f;
         s.layer[0].analog.uniDetune = 28; space (s, Space::Hall, 0.25f); echo (s, 6, 0.35f, 0.2f);
         L.add (K, "Stab", "Trance Stab", "trance stab supersaw edm", s);
     }
@@ -101,12 +101,12 @@ void addSynthKeys (Lib& L)
         L.add (K, "Analog", "Analog EP", "analog electric piano soft sine triangle", s);
     }
     {
-        auto s = polyKeys (1, -1, 0, 800, 0.6f, 4.0f, 0.3f, 0.0f, 0.15f);
+        auto s = polyKeys (1, -1, 0, 800, 0.6f, 4.0f, 0.3f, 0.0f, 0.15f); s.layer[0].common.level = 5.0f;
         s.layer[0].analog.o1PW = 0.12f;
         L.add (K, "Funk", "Synth Clavi", "clav synth funk pulse", s);
     }
     {
-        auto s = polyKeys (0, 1, 3, 500, 0.7f, 4.5f, 0.4f, 0.1f, 0.2f);
+        auto s = polyKeys (0, 1, 3, 500, 0.7f, 4.5f, 0.4f, 0.1f, 0.2f); s.layer[0].common.level = 5.0f;
         s.layer[0].analog.fDrive = 0.6f;
         L.add (K, "Funk", "Funk Synth Keys", "funk resonant envelope", s);
     }

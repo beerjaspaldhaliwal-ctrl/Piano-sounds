@@ -34,7 +34,7 @@ struct FormantBank
     {
         float y = 0.0f;
         for (int k = 0; k < 3; ++k) y += bp[k].bandpass (x) * gains[k];
-        return y * 2.0f;
+        return y * 0.75f;
     }
     void reset() { for (auto& b : bp) b.reset(); }
 };
@@ -104,6 +104,7 @@ private:
                 v += polyBlep (ph, inc);
                 float t2 = ph + 1.0f - pw; if (t2 >= 1.0f) t2 -= 1.0f;
                 v -= polyBlep (t2, inc);
+                v = (v - (2.0f * pw - 1.0f)) * 0.65f;   // remove the duty-cycle DC, match saw loudness
                 break;
             }
             case 2: v = 1.0f - 4.0f * std::fabs (ph - 0.5f); break;
@@ -231,7 +232,8 @@ inline void AnalogVoice::render (float* L, float* R, int n)
     const float lvl1 = P.o1Level, lvl2 = P.o2Level, lvl3 = P.o3Level;
     const float fm = P.fm * 0.6f;
     const bool sync = P.sync > 0.5f;
-    const float out = velGain * 0.32f;
+    // mono patches get +6 dB so a single line sits level with poly chords
+    const float out = velGain * 0.36f * (eng->params->common.poly <= 1.0f ? 2.0f : 1.0f);
 
     for (int i = 0; i < n; ++i)
     {

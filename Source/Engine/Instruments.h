@@ -123,6 +123,7 @@ inline SoundData steelGuitar()
     auto& p = l.pluck;
     p.excite = 0; p.bright = 0.62f; p.pluckPos = 0.13f; p.decay = 1.0f; p.damping = 0.38f; p.stiffness = 0.15f;
     p.body = 2; p.bodyMix = 0.65f; p.twang = 5.0f; p.release = 0.25f; p.relNoise = 0.12f; p.pickNoise = 0.35f; p.width = 0.4f;
+    l.common.level = 4.0f;
     space (s, Space::Room, 0.14f);
     return s;
 }
@@ -311,7 +312,7 @@ inline SoundData analogPatch (int w1, int w2, float detuneCents, float cutoff, f
     auto s = analog();
     auto& a = s.layer[0].analog;
     osc (a, 1, w1, 0, 0, 0, 0.85f);
-    osc (a, 2, w2, 0, 0, detuneCents, w2 >= 0 ? 0.75f : 0.0f);
+    osc (a, 2, std::max (w2, 0), 0, 0, detuneCents, w2 >= 0 ? 0.75f : 0.0f);
     filt (a, 0, cutoff, res, envOct);
     ampEnv (a, A, D, S, R);
     fltEnv (a, fA, fD, fS, fR);

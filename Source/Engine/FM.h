@@ -70,7 +70,7 @@ public:
             if (! wasActive) { phase[i] = 0.0f; out[i] = 0.0f; }
         }
         fb1 = fb2 = 0.0f;
-        carrierNorm = 0.36f / std::pow ((float) std::max (nc, 1), 0.6f);
+        carrierNorm = 0.36f / std::pow ((float) std::max (nc, 1), 0.6f) * (eng->params->common.poly <= 1.0f ? 2.0f : 1.0f);
         lfoPhase = 0.0f;
         lfoFade = 0.0f;
     }
