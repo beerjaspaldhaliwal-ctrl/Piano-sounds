@@ -72,19 +72,45 @@ jobs:
       - name: Collect plug-ins
         shell: bash
         run: |
-          mkdir -p dist
+          OUT=dist/Keyverse
+          mkdir -p "$OUT"
           ART=build/Keyverse_artefacts/Release
-          cp -R "$ART/VST3/Keyverse.vst3" dist/
-          if [ -d "$ART/AU/Keyverse.component" ]; then cp -R "$ART/AU/Keyverse.component" dist/; fi
-          if [ -d "$ART/LV2/Keyverse.lv2" ]; then cp -R "$ART/LV2/Keyverse.lv2" dist/; fi
-          if [ -d "$ART/Standalone/Keyverse.app" ]; then cp -R "$ART/Standalone/Keyverse.app" dist/; fi
-          if [ -f "$ART/Standalone/Keyverse.exe" ]; then cp "$ART/Standalone/Keyverse.exe" dist/; fi
-          if [ -f "$ART/Standalone/Keyverse" ]; then cp "$ART/Standalone/Keyverse" dist/; fi
-          cp README.md dist/ 2>/dev/null || true
-          ls -la dist
+          cp -R "$ART/VST3/Keyverse.vst3" "$OUT/"
+          if [ -d "$ART/AU/Keyverse.component" ]; then cp -R "$ART/AU/Keyverse.component" "$OUT/"; fi
+          if [ -d "$ART/LV2/Keyverse.lv2" ]; then cp -R "$ART/LV2/Keyverse.lv2" "$OUT/"; fi
+          if [ -d "$ART/Standalone/Keyverse.app" ]; then cp -R "$ART/Standalone/Keyverse.app" "$OUT/"; fi
+          if [ -f "$ART/Standalone/Keyverse.exe" ]; then cp "$ART/Standalone/Keyverse.exe" "$OUT/"; fi
+          if [ -f "$ART/Standalone/Keyverse" ]; then cp "$ART/Standalone/Keyverse" "$OUT/"; chmod +x "$OUT/Keyverse"; fi
+          cp docs/INSTALL.md "$OUT/INSTALL.md"
+          ls -la "$OUT"
+
+      # Unsigned arm64 code will not load on Apple Silicon; an ad-hoc signature is enough to run locally.
+      - name: Ad-hoc sign macOS bundles
+        if: runner.os == 'macOS'
+        run: |
+          for b in dist/Keyverse/Keyverse.vst3 dist/Keyverse/Keyverse.component dist/Keyverse/Keyverse.app; do
+            codesign --force --deep --sign - "$b"
+            codesign --verify --deep --strict --verbose=1 "$b"
+          done
+
+      # Artifact uploads drop file permissions, which breaks macOS bundles and the Linux
+      # standalone, so macOS and Linux are packed into an archive that keeps them.
+      - name: Package
+        shell: bash
+        run: |
+          cd dist
+          case "${{ runner.os }}" in
+            macOS) ditto -c -k --sequesterRsrc --keepParent Keyverse ../Keyverse-macOS.zip ;;
+            Linux) tar czf ../Keyverse-Linux.tar.gz Keyverse ;;
+            Windows) mv Keyverse ../Keyverse-Windows ;;
+          esac
 
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
           name: Keyverse-${{ matrix.name }}
-          path: dist
+          path: |
+            Keyverse-macOS.zip
+            Keyverse-Linux.tar.gz
+            Keyverse-Windows
+          if-no-files-found: error

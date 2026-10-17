@@ -59,11 +59,18 @@ The full list of sounds is in [PRESETS.md](PRESETS.md).
 
 ## Download
 
-Every push builds the plug-in for all three platforms on GitHub Actions. Open the
-**Actions** tab, select the latest **Build plug-in** run, and download `Keyverse-Windows`,
-`Keyverse-macOS` or `Keyverse-Linux` from the run's Artifacts section.
+Every push builds the plug-in for all three platforms with GitHub Actions:
 
-Install by copying the files to:
+1. Sign in to GitHub and open the repository's **Actions** tab.
+2. Click the newest **Build plug-in** run that has a green check mark.
+3. Scroll to **Artifacts** at the bottom of the run page and click **Keyverse-Windows**,
+   **Keyverse-macOS** or **Keyverse-Linux**.
+4. Unzip the download. The macOS and Linux downloads contain one more archive
+   (`Keyverse-macOS.zip` / `Keyverse-Linux.tar.gz`); extract that too. It keeps the file
+   permissions the plug-ins need.
+5. Follow [docs/INSTALL.md](docs/INSTALL.md) (also included in every download).
+
+Install locations:
 
 | Format | Windows | macOS | Linux |
 |---|---|---|---|
@@ -73,9 +80,10 @@ Install by copying the files to:
 
 The Standalone app runs without a DAW. Choose your audio and MIDI devices under **Options**.
 
-The builds are not code-signed. On macOS, if the plug-in is blocked, run
-`xattr -cr ~/Library/Audio/Plug-Ins/VST3/Keyverse.vst3` (and the same for the `.component`
-and `.app`).
+The builds are not code-signed by a developer account. On macOS, clear the quarantine flag
+once with `xattr -cr` on the `.vst3`, `.component` and `.app` (exact commands in
+[docs/INSTALL.md](docs/INSTALL.md)). On Windows, click **More info** then **Run anyway** if
+SmartScreen warns about the standalone app.
 
 ## Building from source
 
