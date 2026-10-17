@@ -143,7 +143,8 @@ jobs:
           $app = "$env:ProgramFiles\Keyverse\Keyverse.exe"
           if (-not (Test-Path "$vst3\Contents\x86_64-win\Keyverse.vst3")) { throw "VST3 was not installed to $vst3" }
           if (-not (Test-Path $app)) { throw "standalone app was not installed to $app" }
-          .\pluginval.exe --strictness-level 5 --validate-in-process "$vst3"
+          # pluginval is a GUI-subsystem exe: piping makes PowerShell wait for it and set $LASTEXITCODE
+          .\pluginval.exe --strictness-level 5 --validate-in-process "$vst3" | Out-Host
           if ($LASTEXITCODE -ne 0) { throw "pluginval failed on the installed plug-in" }
           # The uninstaller relaunches itself from %TEMP%, so wait for the files to disappear
           Start-Process -FilePath "$env:ProgramFiles\Keyverse\unins000.exe" -ArgumentList '/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART' -Wait
