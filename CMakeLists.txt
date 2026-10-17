@@ -4,6 +4,8 @@ project(Keyverse VERSION 1.0.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# Static C++ runtime on Windows: the plug-in and app run without the VC++ redistributable
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
 endif()
@@ -69,6 +71,7 @@ if (KEYVERSE_BUILD_PLUGIN)
         FORMATS                     ${KEYVERSE_FORMATS}
         PRODUCT_NAME                "Keyverse"
         DESCRIPTION                 "Pianos, keys, synths and guitars instrument"
+        ICON_BIG                    "${CMAKE_CURRENT_SOURCE_DIR}/docs/icon.png"
         IS_SYNTH                    TRUE
         NEEDS_MIDI_INPUT            TRUE
         NEEDS_MIDI_OUTPUT           FALSE

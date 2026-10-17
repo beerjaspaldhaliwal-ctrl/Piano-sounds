@@ -59,16 +59,17 @@ The full list of sounds is in [PRESETS.md](PRESETS.md).
 
 ## Download
 
-Every push builds the plug-in for all three platforms with GitHub Actions:
+**Windows installer:** [Keyverse-Windows-Setup.exe](https://github.com/beerjaspaldhaliwal-ctrl/Piano-sounds/releases/latest/download/Keyverse-Windows-Setup.exe).
+Run it, click **More info > Run anyway** if SmartScreen warns (it is not code-signed),
+then rescan plug-ins in your DAW.
 
-1. Sign in to GitHub and open the repository's **Actions** tab.
-2. Click the newest **Build plug-in** run that has a green check mark.
-3. Scroll to **Artifacts** at the bottom of the run page and click **Keyverse-Windows**,
-   **Keyverse-macOS** or **Keyverse-Linux**.
-4. Unzip the download. The macOS and Linux downloads contain one more archive
-   (`Keyverse-macOS.zip` / `Keyverse-Linux.tar.gz`); extract that too. It keeps the file
-   permissions the plug-ins need.
-5. Follow [docs/INSTALL.md](docs/INSTALL.md) (also included in every download).
+The [Releases page](https://github.com/beerjaspaldhaliwal-ctrl/Piano-sounds/releases/latest)
+also has a portable Windows zip and the macOS and Linux downloads. Installation steps for
+every system are in [docs/INSTALL.md](docs/INSTALL.md), which is also included in each download.
+
+Releases are built by GitHub Actions when a version tag such as `v1.0.0` is pushed. Every
+other push also builds all platforms; those builds are under the **Artifacts** of each
+**Build plug-in** run in the **Actions** tab (signing in to GitHub is needed to download them).
 
 Install locations:
 
@@ -83,7 +84,7 @@ The Standalone app runs without a DAW. Choose your audio and MIDI devices under 
 The builds are not code-signed by a developer account. On macOS, clear the quarantine flag
 once with `xattr -cr` on the `.vst3`, `.component` and `.app` (exact commands in
 [docs/INSTALL.md](docs/INSTALL.md)). On Windows, click **More info** then **Run anyway** if
-SmartScreen warns about the standalone app.
+SmartScreen warns about the installer or the standalone app.
 
 ## Building from source
 

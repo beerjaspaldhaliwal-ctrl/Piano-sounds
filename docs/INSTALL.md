@@ -9,10 +9,20 @@ instrument from "Keyverse Audio".
 
 ## Windows
 
+**With the installer (recommended):**
+
+1. Run `Keyverse-Windows-Setup.exe`.
+2. If Windows shows "Windows protected your PC", click **More info** and then **Run anyway**
+   (the installer is not code-signed).
+3. Click through the steps. The VST3 goes to `C:\Program Files\Common Files\VST3\`, the
+   standard folder every Windows DAW scans, and the standalone app goes to the Start menu.
+4. Open your DAW and rescan plug-ins. To remove Keyverse later, use **Settings > Apps**.
+
+**Without the installer (portable zip):**
+
 1. Copy the `Keyverse.vst3` folder to `C:\Program Files\Common Files\VST3\`.
 2. Optional: put `Keyverse.exe` (the standalone app) anywhere you like and run it.
-3. If Windows SmartScreen warns about the app, click **More info** and then **Run anyway**
-   (the build is not code-signed).
+3. If Windows SmartScreen warns about the app, click **More info** and then **Run anyway**.
 
 ## macOS
 
