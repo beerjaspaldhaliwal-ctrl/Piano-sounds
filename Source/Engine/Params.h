@@ -26,8 +26,8 @@ inline PD intp (const char* id, const char* label, float lo, float hi, const cha
 inline PD tog (const char* id, const char* label)                                            { return { id, label, 0.0f, 1.0f, PK::Toggle, nullptr, "" }; }
 inline PD cho (const char* id, const char* label, float numChoices, const char* choices)     { return { id, label, 0.0f, numChoices - 1.0f, PK::Choice, choices, "" }; }
 
-enum class Engine : int { None = 0, Piano, EPiano, Pluck, Mallet, Organ, Analog, FM, Count };
-inline const char* engineChoices() { return "None|Acoustic Piano|Electric Piano|Plucked String|Mallet & Bell|Organ|Analog Synth|FM Synth"; }
+enum class Engine : int { None = 0, Piano, EPiano, Pluck, Mallet, Organ, Analog, FM, Wavetable, Count };
+inline const char* engineChoices() { return "None|Acoustic Piano|Electric Piano|Plucked String|Mallet & Bell|Organ|Analog Synth|FM Synth|Wavetable Synth"; }
 
 //==============================================================================
 struct CommonParams
@@ -40,7 +40,7 @@ struct CommonParams
 
     template <class V> void visit (V&& v)
     {
-        v (cho ("engine", "Engine", 8, engineChoices()), engine);
+        v (cho ("engine", "Engine", 9, engineChoices()), engine);
         v (lin ("level", "Level", -40, 12, "dB"), level);
         v (lin ("pan", "Pan", -1, 1), pan);
         v (intp ("transpose", "Transpose", -36, 36, "st"), transpose);
@@ -453,6 +453,105 @@ struct FMParams
 };
 
 //==============================================================================
+// Wavetable synth: two morphing wavetable oscillators with phase warps,
+// unison with per-voice table spread, sub/noise, the analog filter set,
+// three envelopes (amp, filter, modulation) and two LFOs.
+struct WavetableParams
+{
+    float t1Table = 0, t1Pos = 0, t1Oct = 0, t1Semi = 0, t1Fine = 0, t1Level = 1, t1Warp = 0, t1WarpAmt = 0;
+    float t2Table = 3, t2Pos = 0, t2Oct = 0, t2Semi = 0, t2Fine = 0, t2Level = 0, t2Warp = 0, t2WarpAmt = 0;
+    float subLevel = 0, noiseLevel = 0;
+    float unison = 1, uniDetune = 15, uniSpread = 0.6f, uniPos = 0, drift = 0.2f;
+    float fType = 0, cutoff = 8000, res = 0.15f, fDrive = 0.2f, keyTrack = 0.5f, fEnv = 1, fVel = 0.5f, hpCut = 20, vowel = 0;
+    float aA = 0.005f, aD = 0.6f, aS = 0.8f, aR = 0.4f;
+    float fA = 0.005f, fD = 0.8f, fS = 0.4f, fR = 0.5f;
+    float mA = 0.01f, mD = 1.5f, mS = 0.0f, mR = 0.5f, mPos1 = 0, mPos2 = 0, mPitch = 0, mWarp = 0;
+    float velAmp = 0.5f, velPos = 0;
+    float l1Rate = 5, l1Shape = 0, l1Pitch = 0, l1Pos = 0, l1Cut = 0, l1Amp = 0, l1Delay = 0;
+    float l2Rate = 0.25f, l2Shape = 0, l2Pos = 0, l2Cut = 0, l2Pan = 0;
+    float mwPos = 0, mwCut = 0, atPos = 0, atCut = 0, atVib = 0;
+
+    static const char* tables()
+    {
+        return "Basic Shapes|Pulse Width|Saw Sync|Harmonic Sweep|Vocal Formants|Digital Steps|Drawbar Organ|FM Sweep"
+               "|Bell Spectra|Wavefolder|Resonant Sweep|Hollow Comb|Spectral Noise|Low Pass Sweep|Choir|Metallic";
+    }
+    static constexpr int kNumTables = 16;
+    static const char* warps() { return "Off|Bend +|Bend -|Sync|Mirror|Squeeze|FM from Osc 2|Bit Crush"; }
+
+    template <class V> void visit (V&& v)
+    {
+        v (cho ("t1Table", "Osc 1 Wavetable", (float) kNumTables, tables()), t1Table);
+        v (lin ("t1Pos", "Osc 1 Position", 0, 1), t1Pos);
+        v (intp ("t1Oct", "Osc 1 Octave", -3, 3), t1Oct);
+        v (intp ("t1Semi", "Osc 1 Semi", -12, 12), t1Semi);
+        v (lin ("t1Fine", "Osc 1 Fine", -100, 100, "ct"), t1Fine);
+        v (lin ("t1Level", "Osc 1 Level", 0, 1), t1Level);
+        v (cho ("t1Warp", "Osc 1 Warp", 8, warps()), t1Warp);
+        v (lin ("t1WarpAmt", "Osc 1 Warp Amount", 0, 1), t1WarpAmt);
+        v (cho ("t2Table", "Osc 2 Wavetable", (float) kNumTables, tables()), t2Table);
+        v (lin ("t2Pos", "Osc 2 Position", 0, 1), t2Pos);
+        v (intp ("t2Oct", "Osc 2 Octave", -3, 3), t2Oct);
+        v (intp ("t2Semi", "Osc 2 Semi", -12, 12), t2Semi);
+        v (lin ("t2Fine", "Osc 2 Fine", -100, 100, "ct"), t2Fine);
+        v (lin ("t2Level", "Osc 2 Level", 0, 1), t2Level);
+        v (cho ("t2Warp", "Osc 2 Warp", 8, warps()), t2Warp);
+        v (lin ("t2WarpAmt", "Osc 2 Warp Amount", 0, 1), t2WarpAmt);
+        v (lin ("subLevel", "Sub Osc", 0, 1), subLevel);
+        v (lin ("noiseLevel", "Noise", 0, 1), noiseLevel);
+        v (intp ("unison", "Unison Voices", 1, 8), unison);
+        v (lin ("uniDetune", "Unison Detune", 0, 60, "ct"), uniDetune);
+        v (lin ("uniSpread", "Unison Spread", 0, 1), uniSpread);
+        v (lin ("uniPos", "Unison Table Spread", 0, 0.5f), uniPos);
+        v (lin ("drift", "Analog Drift", 0, 1), drift);
+        v (cho ("fType", "Filter Type", 7, "Ladder LP 24|SVF LP 12|SVF Band Pass|SVF High Pass|SVF Notch|LP 24 + HP|Formant"), fType);
+        v (logp ("cutoff", "Cutoff", 20, 20000, "Hz"), cutoff);
+        v (lin ("res", "Resonance", 0, 1), res);
+        v (lin ("fDrive", "Filter Drive", 0, 1), fDrive);
+        v (lin ("keyTrack", "Key Track", 0, 1.2f), keyTrack);
+        v (lin ("fEnv", "Filter Env", -8, 8, "oct"), fEnv);
+        v (lin ("fVel", "Velocity > Cutoff", 0, 4, "oct"), fVel);
+        v (logp ("hpCut", "High Pass", 20, 2000, "Hz"), hpCut);
+        v (lin ("vowel", "Vowel", 0, 4), vowel);
+        v (logp ("aA", "Amp Attack", 0.0005f, 10, "s"), aA);
+        v (logp ("aD", "Amp Decay", 0.005f, 20, "s"), aD);
+        v (lin ("aS", "Amp Sustain", 0, 1), aS);
+        v (logp ("aR", "Amp Release", 0.005f, 20, "s"), aR);
+        v (logp ("fA", "Filter Attack", 0.0005f, 10, "s"), fA);
+        v (logp ("fD", "Filter Decay", 0.005f, 20, "s"), fD);
+        v (lin ("fS", "Filter Sustain", 0, 1), fS);
+        v (logp ("fR", "Filter Release", 0.005f, 20, "s"), fR);
+        v (logp ("mA", "Mod Env Attack", 0.0005f, 10, "s"), mA);
+        v (logp ("mD", "Mod Env Decay", 0.005f, 20, "s"), mD);
+        v (lin ("mS", "Mod Env Sustain", 0, 1), mS);
+        v (logp ("mR", "Mod Env Release", 0.005f, 20, "s"), mR);
+        v (lin ("mPos1", "Mod Env > Osc 1 Pos", -1, 1), mPos1);
+        v (lin ("mPos2", "Mod Env > Osc 2 Pos", -1, 1), mPos2);
+        v (lin ("mPitch", "Mod Env > Pitch", -24, 24, "st"), mPitch);
+        v (lin ("mWarp", "Mod Env > Warp", -1, 1), mWarp);
+        v (lin ("velAmp", "Velocity > Amp", 0, 1), velAmp);
+        v (lin ("velPos", "Velocity > Position", -1, 1), velPos);
+        v (logp ("l1Rate", "LFO 1 Rate", 0.05f, 20, "Hz"), l1Rate);
+        v (cho ("l1Shape", "LFO 1 Shape", 7, "Sine|Triangle|Saw Up|Saw Down|Square|Sample & Hold|Smooth Random"), l1Shape);
+        v (lin ("l1Pitch", "LFO 1 > Pitch", 0, 1, "st"), l1Pitch);
+        v (lin ("l1Pos", "LFO 1 > Position", 0, 0.5f), l1Pos);
+        v (lin ("l1Cut", "LFO 1 > Cutoff", 0, 4, "oct"), l1Cut);
+        v (lin ("l1Amp", "LFO 1 > Amp", 0, 1), l1Amp);
+        v (logp ("l1Delay", "LFO 1 Delay", 0, 5, "s"), l1Delay);
+        v (logp ("l2Rate", "LFO 2 Rate", 0.02f, 10, "Hz"), l2Rate);
+        v (cho ("l2Shape", "LFO 2 Shape", 7, "Sine|Triangle|Saw Up|Saw Down|Square|Sample & Hold|Smooth Random"), l2Shape);
+        v (lin ("l2Pos", "LFO 2 > Position", 0, 0.5f), l2Pos);
+        v (lin ("l2Cut", "LFO 2 > Cutoff", 0, 4, "oct"), l2Cut);
+        v (lin ("l2Pan", "LFO 2 > Pan", 0, 1), l2Pan);
+        v (lin ("mwPos", "ModWheel > Position", -1, 1), mwPos);
+        v (lin ("mwCut", "ModWheel > Cutoff", -4, 4, "oct"), mwCut);
+        v (lin ("atPos", "Pressure > Position", -1, 1), atPos);
+        v (lin ("atCut", "Pressure > Cutoff", -4, 4, "oct"), atCut);
+        v (lin ("atVib", "Pressure > Vibrato", 0, 1, "st"), atVib);
+    }
+};
+
+//==============================================================================
 struct LayerParams
 {
     CommonParams common;
@@ -463,6 +562,7 @@ struct LayerParams
     OrganParams organ;
     AnalogParams analog;
     FMParams fm;
+    WavetableParams wt;
     InsertFxParams fx;
 
     Engine engine() const { return (Engine) (int) common.engine; }
@@ -480,6 +580,7 @@ struct LayerParams
             case Engine::Organ:  organ.visit (v); break;
             case Engine::Analog: analog.visit (v); break;
             case Engine::FM:     fm.visit (v); break;
+            case Engine::Wavetable: wt.visit (v); break;
             default: break;
         }
         fx.visit (v);

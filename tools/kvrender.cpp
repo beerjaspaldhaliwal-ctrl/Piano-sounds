@@ -194,7 +194,7 @@ int main (int argc, char** argv)
             t.prepare (sr, 512);
             SoundData d = pr.data;
             d.gfx.revMix = 0; d.gfx.dlyMix = 0; d.gfx.lofiWow = 0;
-            for (auto& l : d.layer) { l.fx.m1Type = 0; l.fx.m2Type = 0; l.common.arpMode = 0; l.common.strum = 0; l.analog.l1Pitch = 0; l.analog.drift = 0; l.fm.lfoPitch = 0; }
+            for (auto& l : d.layer) { l.fx.m1Type = 0; l.fx.m2Type = 0; l.common.arpMode = 0; l.common.strum = 0; l.analog.l1Pitch = 0; l.analog.drift = 0; l.fm.lfoPitch = 0; l.wt.l1Pitch = 0; l.wt.drift = 0; }
             t.setSound (d, true);
             const int n = (int) (1.2 * sr);
             std::vector<float> a ((size_t) n), b ((size_t) n);

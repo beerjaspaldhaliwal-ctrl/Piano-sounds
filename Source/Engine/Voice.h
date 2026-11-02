@@ -39,6 +39,7 @@ public:
     uint32_t stamp = 0;
     float curNote = 60.0f, targetNote = 60.0f;  // for glide (semitones)
     float pan = 0.0f;       // extra pan from voice spreading
+    float pressure = 0.0f;  // polyphonic aftertouch 0..1
 
     virtual void start (int key, float velocity) = 0;
     virtual void release() = 0;

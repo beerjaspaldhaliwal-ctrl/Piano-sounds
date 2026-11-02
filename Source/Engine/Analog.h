@@ -180,7 +180,8 @@ inline void AnalogVoice::render (float* L, float* R, int n)
     const float drift = P.drift * 0.12f;
     const float pe = P.pEnv * pEnv;
     pEnv *= std::pow (pEnvMul, (float) n);
-    const float vib = l1 * P.l1Pitch + C.aftertouch * P.atVib * sin01 ((float) key * 0.1f);
+    const float press = std::max (C.aftertouch, pressure);
+    const float vib = l1 * P.l1Pitch + press * P.atVib * sin01 ((float) key * 0.1f);
     const float baseNote = curNote + pe + vib;
 
     int uni = std::clamp ((int) P.unison, 1, kMaxUni);
@@ -217,7 +218,7 @@ inline void AnalogVoice::render (float* L, float* R, int n)
                        + P.keyTrack * (curNote - 60.0f) / 12.0f
                        + P.fVel * (vel - 0.5f)
                        + l1 * P.l1Cut + l2 * P.l2Cut
-                       + C.modWheel * P.mwCut + C.aftertouch * P.atCut;
+                       + C.modWheel * P.mwCut + press * P.atCut;
     const int ft = (int) P.fType;
     const float res = P.res;
     const float drive = 1.0f + 3.0f * P.fDrive;

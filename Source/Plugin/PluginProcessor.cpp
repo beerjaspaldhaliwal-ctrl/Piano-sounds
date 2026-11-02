@@ -24,6 +24,7 @@ void visitSound (kv::SoundData& s, F&& f)
         L.organ.visit (wrap ("organ"));
         L.analog.visit (wrap ("analog"));
         L.fm.visit (wrap ("fm"));
+        L.wt.visit (wrap ("wt"));
         L.fx.visit (wrap ("fx"));
     }
     s.gfx.visit ([&] (const kv::PD& d, float& v) { f (juce::String ("G.") + d.id, d, v); });

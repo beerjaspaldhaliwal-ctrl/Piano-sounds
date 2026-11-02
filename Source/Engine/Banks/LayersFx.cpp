@@ -292,5 +292,9 @@ void addInit (Lib& L)
         f.alg = 2; op (f, 0, 1.0f, 1.0f, 0.002f, 1.0f, 0.8f, 0.3f); op (f, 1, 1.0f, 0.6f, 0.002f, 1.0f, 0.5f, 0.3f);
         L.add (I, "Init", "Init FM Synth", "init template blank", s);
     }
+    {
+        auto s = make (Engine::Wavetable); s.layer[0].common.poly = 16;
+        L.add (I, "Init", "Init Wavetable Synth", "init template blank wavetable", s);
+    }
 }
 } // namespace kv::banks

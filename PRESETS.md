@@ -1,8 +1,8 @@
 # Keyverse factory presets
 
-509 sounds in 16 categories, plus 7 init templates for designing your own. Every preset can be reshaped with the macro knobs and fully edited on the **Edit** page.
+550 sounds in 17 categories, plus 8 init templates for designing your own. Every preset can be reshaped with the macro knobs and fully edited on the **Edit** page.
 
-| Category | Presets |
+| Category \| Presets |
 |---|---|
 | [Acoustic Pianos](#acoustic-pianos) | 55 |
 | [Electric Pianos](#electric-pianos) | 52 |
@@ -17,10 +17,11 @@
 | [Synth Bass](#synth-bass) | 29 |
 | [Strings & Brass](#strings--brass) | 24 |
 | [Plucks & Arps](#plucks--arps) | 24 |
+| [Wavetable Synths](#wavetable-synths) | 41 |
 | [World](#world) | 25 |
 | [Layers & Splits](#layers--splits) | 27 |
 | [FX & Atmospheres](#fx--atmospheres) | 18 |
-| [Init Templates](#init-templates) | 7 |
+| [Init Templates](#init-templates) | 8 |
 
 ## Acoustic Pianos
 
@@ -230,6 +231,20 @@
 
 **Pluck:** Bell Pluck · Synth Pluck · Saw Pluck Chords · Synth Marimba · Glass Pluck · Trance Pluck · Square Pluck
 
+## Wavetable Synths
+
+**Pad:** Spectral Bloom · Glass Choir · PPG Waves · Resonant Drift · Hyper Saw Pad · Frozen Metal · Comb Tide · Organ Shimmer Pad · Dust Nebula · Digital Dawn
+
+**Keys:** Wave E.Piano · Crystal Keys · Morph Organ · Poly Wave Keys · West Coast Keys · Additive Keys
+
+**Lead:** Sync Scream · Talking Lead · Wide Wave Lead · Digital Brass Lead · Hollow Whistle · Folded Solo
+
+**Bass:** Wave Bass · Growl Bass · Folded Wobble · FM Wave Bass · Sub Drop · Crushed Bass · Vowel Bass · Sync Bass
+
+**Pluck:** Harmonic Pluck · Bell Pluck · Digital Stab · Metal Pluck · Trance Pluck · Folded Pluck
+
+**Texture:** Vowel Morph Choir · Event Horizon · Wave Sequence · Rising Tension · Formant Voices
+
 ## World
 
 **India:** Sitar · Tanpura Drone · Bansuri Flute
@@ -296,4 +311,4 @@
 
 ## Init Templates
 
-**Init:** Init Acoustic Piano · Init Electric Piano · Init Plucked String · Init Mallet & Bell · Init Organ · Init Analog Synth · Init FM Synth
+**Init:** Init Acoustic Piano · Init Electric Piano · Init Plucked String · Init Mallet & Bell · Init Organ · Init Analog Synth · Init FM Synth · Init Wavetable Synth

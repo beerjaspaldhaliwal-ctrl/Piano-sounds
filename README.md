@@ -1,9 +1,9 @@
 # Keyverse
 
 **Keyverse** is a keyboard instrument plug-in in the spirit of Keyscape and Analog Lab: one
-browser with **509 ready-to-play sounds** covering acoustic and electric pianos, synth keys,
+browser with **550 ready-to-play sounds** covering acoustic and electric pianos, synth keys,
 organs, clavs and harpsichords, mallets and bells, guitars, basses, synth pads, leads and
-basses, strings and brass, plucks and arpeggios, world instruments, layered/split
+basses, strings and brass, plucks and arpeggios, morphing wavetable synths, world instruments, layered/split
 combinations and atmospheres, plus init templates for building your own sounds.
 
 It builds as **VST3, AU (macOS), LV2 (Linux) and a Standalone app** for Windows, macOS and Linux.
@@ -12,7 +12,7 @@ It builds as **VST3, AU (macOS), LV2 (Linux) and a Standalone app** for Windows,
 
 ## How the sounds are made
 
-There are no sample libraries to download. Every sound is generated in real time by seven
+There are no sample libraries to download. Every sound is generated in real time by eight
 synthesis engines, most of them physical models of the real instrument:
 
 | Engine | Technique | Used for |
@@ -24,6 +24,7 @@ synthesis engines, most of them physical models of the real instrument:
 | **Organ** | Nine drawbars with tonewheel foldback, key click, percussion and scanner vibrato/chorus, plus combo, pipe, reed organ and accordion voicings | Tonewheel organs, combo organs, pipe organs, harmonium, accordion |
 | **Analog Synth** | 3 PolyBLEP oscillators, supersaw, 8-voice unison, sync, ring mod and FM; transistor ladder, SVF, MS-20 style and vowel/formant filters; envelopes, 2 LFOs, glide, analog drift | Synth keys, pads, leads, basses, strings, brass, plucks |
 | **FM Synth** | 6-operator phase modulation with 12 algorithms | Digital electric pianos, bells, FM basses, brass, organs |
+| **Wavetable Synth** | 2 morphing wavetable oscillators over 16 built-in tables (basic shapes, PWM, sync, harmonic and resonant sweeps, vocal formants, choir, PPG-style digital, drawbars, FM, bells, wavefolder, comb, metallic, spectral noise), mip-mapped and band-limited with Hermite interpolation; 8 warps (bend, sync, mirror, squeeze, FM from osc 2, bit crush), 8-voice unison with table spread, sub and noise, the analog filters, a modulation envelope and LFOs that scan the tables | Evolving pads, vocal and choir textures, digital keys, growl and wobble basses, plucks, leads |
 
 Each layer has insert effects (compressor, auto/LFO/pedal wah, drive and guitar/bass amp
 models with cabinets, EQ, and two modulation slots: chorus, ensemble, phaser, flanger,
@@ -41,7 +42,8 @@ guitars, an arpeggiator and mono/legato/glide.
   and click a preset to load it. Star presets to add them to **Favourites**. Use `<` / `>`
   to step through the list.
 - **Perform page:** Analog-Lab-style macros. **Brightness**, **Timbre**, **Time** and
-  **Movement** reshape the sound. **Mod FX**, **Delay** and **Reverb** scale the effects.
+  **Movement** reshape the sound (on wavetable sounds, Timbre scans through the wavetables).
+  **Mod FX**, **Delay** and **Reverb** scale the effects.
   The centre position plays the preset as designed. Double-click a knob to reset it. All
   macros, plus Volume and Master Tune, can be automated from your DAW.
 - **Edit page:** every parameter of every engine and effect, per layer, plus the global
@@ -49,8 +51,10 @@ guitars, an arpeggiator and mono/legato/glide.
   user preset. User presets are stored in `Documents/Keyverse/User Presets` and appear
   under **User**.
 - **MIDI:** velocity, sustain pedal (with half-pedalling on the piano), soft pedal (CC67),
-  mod wheel (vibrato, rotary speed or wah depending on the sound), expression (CC11),
-  pitch bend and channel aftertouch. The on-screen keyboard, mod/pitch wheels and sustain
+  mod wheel (vibrato, rotary speed, wah or wavetable position depending on the sound),
+  expression (CC11), pitch bend, channel aftertouch and polyphonic aftertouch (per-note
+  pressure on the Analog and Wavetable engines, e.g. from FL Studio's piano roll or an
+  MPE-capable keyboard in poly-pressure mode). The on-screen keyboard, mod/pitch wheels and sustain
   button work with the mouse.
 
 ![Edit page](docs/edit.png)
@@ -131,7 +135,7 @@ estimate), that every voice dies away after release, and the real-time CPU facto
 
 ```
 Source/Engine/         sound engine (header-only C++17, no dependencies)
-  Piano.h EPiano.h Pluck.h Mallet.h Organ.h Analog.h FM.h   instrument engines
+  Piano.h EPiano.h Pluck.h Mallet.h Organ.h Analog.h FM.h Wavetable.h   instrument engines
   Effects.h            insert and global effects
   Synth.h              layers, voice allocation, arpeggiator, macros
   Params.h             every parameter, with ranges, used by UI, state and presets

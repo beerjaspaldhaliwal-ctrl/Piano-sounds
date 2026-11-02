@@ -18,6 +18,7 @@ void addLeads (pb::Lib&);
 void addSynthBass (pb::Lib&);
 void addStringsBrass (pb::Lib&);
 void addPlucks (pb::Lib&);
+void addWavetable (pb::Lib&);
 void addWorld (pb::Lib&);
 void addLayers (pb::Lib&);
 void addFx (pb::Lib&);

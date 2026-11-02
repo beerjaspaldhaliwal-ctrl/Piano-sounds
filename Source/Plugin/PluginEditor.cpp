@@ -21,6 +21,7 @@ const char* engineGroupName (kv::Engine e)
         case kv::Engine::Organ:  return "Organ";
         case kv::Engine::Analog: return "Analog Synth";
         case kv::Engine::FM:     return "FM Synth";
+        case kv::Engine::Wavetable: return "Wavetable Synth (morphing tables)";
         case kv::Engine::None:
         case kv::Engine::Count:  break;
     }
@@ -38,6 +39,7 @@ const char* engineShortName (kv::Engine e)
         case kv::Engine::Organ:  return "Organ";
         case kv::Engine::Analog: return "Analog";
         case kv::Engine::FM:     return "FM";
+        case kv::Engine::Wavetable: return "Wavetable";
         case kv::Engine::None:
         case kv::Engine::Count:  break;
     }
@@ -783,6 +785,7 @@ void KeyverseEditor::rebuildEditPanel()
             case kv::Engine::Organ:  L.organ.visit (addRow); break;
             case kv::Engine::Analog: L.analog.visit (addRow); break;
             case kv::Engine::FM:     L.fm.visit (addRow); break;
+            case kv::Engine::Wavetable: L.wt.visit (addRow); break;
             case kv::Engine::None:
             case kv::Engine::Count:  break;
         }

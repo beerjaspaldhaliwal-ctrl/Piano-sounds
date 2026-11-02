@@ -11,6 +11,7 @@
 #include "Organ.h"
 #include "Piano.h"
 #include "Pluck.h"
+#include "Wavetable.h"
 #include <memory>
 
 namespace kv
@@ -100,6 +101,20 @@ inline void applyLayerMacros (LayerParams& p, const Macros& m)
             q.lfoAmp = macroMap (q.lfoAmp, mv, 0.0f, 0.6f);
             break;
         }
+        case Engine::Wavetable:
+        {
+            // Timbre scans the wavetables - the signature wavetable gesture
+            auto& q = p.wt;
+            q.cutoff = clampf (macroScale (q.cutoff, b, 12.0f), 20.0f, 20000.0f);
+            q.t1Pos = clampf (q.t1Pos + (t - 0.5f) * 1.2f, 0.0f, 1.0f);
+            q.t2Pos = clampf (q.t2Pos + (t - 0.5f) * 1.2f, 0.0f, 1.0f);
+            q.res = macroMap (q.res, std::max (0.5f, t), 0.0f, 0.8f);
+            for (float* x : { &q.aA, &q.aD, &q.aR, &q.fA, &q.fD, &q.fR, &q.mA, &q.mD, &q.mR }) *x = macroScale (*x, tm, 5.0f);
+            q.l1Pos = macroMap (q.l1Pos, mv, 0.0f, std::max (0.25f, q.l1Pos * 2.0f));
+            q.l2Pos = macroMap (q.l2Pos, mv, 0.0f, std::max (0.3f, std::min (0.5f, q.l2Pos * 2.0f)));
+            q.l2Cut = macroMap (q.l2Cut, mv, 0.0f, std::max (1.0f, q.l2Cut * 2.0f));
+            break;
+        }
         case Engine::None:
         case Engine::Count:
             break;
@@ -150,6 +165,7 @@ public:
         engines[(int) Engine::Organ]  = std::make_unique<OrganEngine>();
         engines[(int) Engine::Analog] = std::make_unique<AnalogEngine>();
         engines[(int) Engine::FM]     = std::make_unique<FMEngine>();
+        engines[(int) Engine::Wavetable] = std::make_unique<WavetableEngine>();
     }
 
     void prepare (float sampleRate, int maxBlock)
@@ -231,6 +247,16 @@ public:
     void setAftertouch (float v) { ctx.aftertouch = v; }
     void setExpression (float v) { ctx.expression = v; }
     void setBend (float norm) { bendNorm = norm; }
+    // Polyphonic aftertouch: pressure for the voices playing this key
+    void setPolyPressure (int note, float v)
+    {
+        if (auto* e = current())
+            for (int i = 0; i < e->voiceCount(); ++i)
+            {
+                auto& vc = e->voiceAt (i);
+                if (vc.active && vc.note == note) vc.pressure = v;
+            }
+    }
 
     void allNotesOff (bool hard)
     {
@@ -281,6 +307,7 @@ public:
             vibPhase -= std::floor (vibPhase);
             ctx.vibrato = c.mwVib * ctx.modWheel * sin01 (vibPhase);
             if (eff.engine() == Engine::Analog) static_cast<AnalogEngine*> (e)->advanceLfo2 (len);
+            else if (eff.engine() == Engine::Wavetable) static_cast<WavetableEngine*> (e)->advanceLfo2 (len);
 
             processPending (len);
             if ((int) c.arpMode > 0) arpTick (len);
@@ -351,6 +378,7 @@ private:
         vc->targetNote = (float) note;
         vc->curNote = (c.glide > 0.0005f && lastNote >= 0) ? (float) lastNote : (float) note;
         vc->pan = 0.0f;
+        vc->pressure = 0.0f;
         vc->active = false;
         vc->start (note, v);
         lastNote = note;
@@ -654,6 +682,7 @@ public:
     }
     void pitchBend (int value14) { const float b = ((float) value14 - 8192.0f) / 8192.0f; for (auto& l : layers) l.setBend (clampf (b, -1.0f, 1.0f)); }
     void channelPressure (int value) { for (auto& l : layers) l.setAftertouch ((float) value / 127.0f); }
+    void polyPressure (int note, int value) { for (auto& l : layers) l.setPolyPressure (note, (float) value / 127.0f); }
 
     // Raw MIDI bytes (status + data), any channel.
     void handleMidi (const uint8_t* d, int len)
@@ -665,6 +694,7 @@ public:
         else if (st == 0xB0 && len >= 3) controller (d[1], d[2]);
         else if (st == 0xE0 && len >= 3) pitchBend (d[1] | (d[2] << 7));
         else if (st == 0xD0 && len >= 2) channelPressure (d[1]);
+        else if (st == 0xA0 && len >= 3) polyPressure (d[1], d[2]);
     }
 
     void render (float* L, float* R, int n)

@@ -9,7 +9,7 @@ const std::vector<std::string>& categories()
     static const std::vector<std::string> c {
         pb::kAcoustic, pb::kElectric, pb::kSynthKeys, pb::kOrgans, pb::kClavs, pb::kMallets,
         pb::kGuitars, pb::kBasses, pb::kPads, pb::kLeads, pb::kSynthBass, pb::kStrBrass,
-        pb::kPlucks, pb::kWorld, pb::kLayers, pb::kFx, pb::kInit
+        pb::kPlucks, pb::kWavetable, pb::kWorld, pb::kLayers, pb::kFx, pb::kInit
     };
     return c;
 }
@@ -32,6 +32,7 @@ const std::vector<Preset>& factoryPresets()
         banks::addSynthBass (lib);
         banks::addStringsBrass (lib);
         banks::addPlucks (lib);
+        banks::addWavetable (lib);
         banks::addWorld (lib);
         banks::addLayers (lib);
         banks::addFx (lib);

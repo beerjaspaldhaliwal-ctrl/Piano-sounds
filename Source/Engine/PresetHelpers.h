@@ -29,6 +29,7 @@ inline const char* const kLeads = "Synth Leads";
 inline const char* const kSynthBass = "Synth Bass";
 inline const char* const kStrBrass = "Strings & Brass";
 inline const char* const kPlucks = "Plucks & Arps";
+inline const char* const kWavetable = "Wavetable Synths";
 inline const char* const kWorld = "World";
 inline const char* const kLayers = "Layers & Splits";
 inline const char* const kFx = "FX & Atmospheres";
