@@ -142,7 +142,7 @@ private:
     static void makeSpectrum (int t, double x, std::vector<cpx>& s)
     {
         using namespace wtdetail;
-        constexpr double pi = 3.14159265358979323846, tau = 2.0 * pi;
+        static constexpr double pi = 3.14159265358979323846, tau = 2.0 * pi;
         switch (t)
         {
             case 0:   // Basic Shapes: sine > triangle > saw > square > narrow pulse
